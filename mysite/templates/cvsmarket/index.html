@@ -5,42 +5,99 @@
         <header class="bg-cu py-5">
             <div class="container px-4 px-lg-5 my-5">
                 <div class="text-center text-white">
-                    <h1 class="display-4 fw-bolder">Cu 편의점 행사 정보</h1>
+                    <h1 class="display-4 fw-bolder">편의점 행사 정보</h1>
                     <p class="lead fw-normal text-white-50 mb-0">편의점 상품 행사 할이 정보 모음 입니다.</p>
                 </div>
             </div>
         </header>
         <!-- Section-->
+        <section class="py-5 d-flex justify-content-center" style = "height: 150px;">
+            <form action = "{% url 'search' %}"class="d-flex w-50 h-100" method = "GET">
+                    <input class="form-control" type="search" placeholder="Search" name="keyword">
+                    <button class="btn btn-outline-primary my-2 my-sm-0" type="submit">Search</button>
+            </form>
+        </section>
+        
+        <section class = 'section=pagetop bg'>
+            <div class="container">
+
+                {% if 'search' in request.path %}
+                <h2 class="title-page">Search Result</h2>
+                {% else %}
+                <h2 class="title-page">Home</h2>
+                <h3>현재 CU 와 세븐일레븐 1월 정보만 보유하고 있습니다.</h3>
+                {% endif%}
+                
+            </div>
+
+        </section>
+
         <section class="py-5">
             <div class="container px-4 px-lg-5 mt-5">
+                <h2 class="title-page">총 {{product_count}}개</h2>
+                <br>
                 <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
-                    
-                    {% for item in items %}
+                    {% if product_list%}
+                    {% for product in product_list %}
                     <div class="col mb-5">
                         <div class="card h-100">
                             <!-- Product image-->
-                            <img class="card-img-top" src={{item.imgURL}} alt="..." />
+                            <img class="card-img-top" src={{product.img_url}} alt="..." />
                             <!-- Product details-->
                             <div class="card-body p-4">
                                 <div class="text-center">
+                                    <h5 class="fw-bolder"><b>{{product.market}}</b></h5>
                                     <!-- Product name-->
-                                    <h5 class="fw-bolder">{{item.itemName}}
+                                    <h5 class="fw-bolder">{{product.product_name}}
                                     </h5>
                                     <!-- Product price-->
-                                    {{item.price}}
+                                    {{product.price}}
                                 </div>
                             </div>
                             <!-- Product actions-->
                             <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
-                                <div class="text-center"><a class="btn btn-outline-dark mt-auto" href="#">{{item.event}}</a></div>
+                                <div class="text-center"><a class="btn btn-outline-dark mt-auto" href="#">{{product.event_type}}</a></div>
                             </div>
                         </div>
                     </div>
                     {% endfor %}
-                </div>
-            </div>
+                    {% else %}
+                     <div>
+                        <h2>검색 결과가 없습니다. 다시 시도해 주세요.</h2>
+                     </div>
+                    {% endif %}
+                </div> 
+                 <!-- paginator  -->
+                <nav class="mt-4 d-flex justify-content-center">
+                {% if product_list.has_other_pages %}
+                 <ul class="pagination">
+                    {% if product_list.has_previous %}
+                    <li class="page-item"><a class="page-link" href="?page{{product_list.previous_page_number}}">Previous</a></li>
+                    {% else %}
+                    <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
+                    {% endif %}
+
+                    {% for i in product_list.adjusted_elided_pages %}
+                        {%if product_list.number == i %}
+                            <li class="page-item active"><a class="page-link" href="#">{{i}}</a></li>
+                        {% else %}
+                            <li class="page-item"><a class="page-link" href="?page={{i}}">{{i}}</a></li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if product_list.has_next %}
+                    <li class="page-item active"><a class="page-link" href="?page{{product_list.next_page_number}}">Next</a></li>
+                    {% else %}
+                    <li class="page-item disabled"><a class="page-link" href="#">Next</a></li>
+                    {% endif %}
+                 </ul>
+                 {% endif %}
+                </nav>
+            </div>               
         </section>
         {% endblock %}
+
+   
         <!-- Footer-->
         <footer class="py-5 bg-dark">
             <div class="container"><p class="m-0 text-center text-white">Copyright &copy;jisungs stroy 2023</p></div>
